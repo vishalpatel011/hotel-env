@@ -1,0 +1,26 @@
+name: hotel-booking-env
+description: A real-world hotel booking simulation environment
+
+version: 1.0
+
+actions:
+  - check_availability
+  - book_room
+  - cancel_booking
+
+observation:
+  rooms: list
+  bookings: list
+  request: object
+
+reward_range: [0.0, 1.0]
+
+tasks:
+  - name: easy
+    description: Book any available room
+
+  - name: medium
+    description: Book correct room type
+
+  - name: hard
+    description: Handle booking and cancellation properly

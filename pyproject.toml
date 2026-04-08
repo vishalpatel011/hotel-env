@@ -1,0 +1,19 @@
+[project]
+name = "hotel-env"
+version = "0.1.0"
+description = "Hotel Booking OpenEnv Environment"
+authors = [{ name = "Vishal Patel" }]
+
+dependencies = [
+    "pydantic",
+    "fastapi",
+    "uvicorn",
+    "openai",
+    "openenv-core>=0.2.0"
+]
+
+[project.scripts]
+server = "server.app:main"
+
+[tool.openenv]
+env = "env.environment:HotelEnv"

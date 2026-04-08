@@ -116,3 +116,14 @@ It can be extended with date handling, multiple users, and pricing strategies.
 ## Author
 
 Vishal Patel
+
+---
+title: Hotel Env
+emoji: 😻
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference

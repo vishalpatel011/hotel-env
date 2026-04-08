@@ -1,13 +1,10 @@
 ---
-
 title: Hotel Booking Environment Server
 sdk: docker
 app_port: 7860
 base_path: /docs
 tags:
-
-* openenv
-
+  - openenv
 ---
 
 # Hotel Booking OpenEnv Environment

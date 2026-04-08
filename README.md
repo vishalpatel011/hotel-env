@@ -106,7 +106,7 @@ uvicorn server.app:app --host 0.0.0.0 --port 7860
 
 ## API Access
 
-After running, open:
+After running locally:
 
 http://localhost:7860/docs
 
@@ -123,6 +123,15 @@ hotel-env/
 ├── Dockerfile
 └── README.md
 ```
+
+---
+
+## Live Demo 🚀
+
+Interact with the deployed environment:
+
+* API Docs: https://infiniter011-hotel-env.hf.space/docs
+* Space: https://huggingface.co/spaces/infiniter011/hotel-env
 
 ---
 

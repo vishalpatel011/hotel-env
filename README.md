@@ -1,28 +1,34 @@
 ---
+
 title: Hotel Booking Environment Server
+emoji: 🏨
+colorFrom: indigo
+colorTo: purple
 sdk: docker
 app_port: 7860
 base_path: /docs
 tags:
-  - openenv
+
+* openenv
+
 ---
 
 # Hotel Booking OpenEnv Environment
 
 This project implements a real-world hotel booking environment using the OpenEnv framework.
-It is designed to evaluate how well an AI agent can make decisions in a structured system using rewards and state transitions.
+It evaluates how effectively an AI agent can make decisions in a structured system using states, actions, and rewards.
 
 ---
 
 ## Overview
 
-The environment simulates a simple hotel booking workflow where an agent must:
+The environment simulates a hotel booking workflow where an agent must:
 
 * check available rooms
 * select the correct room type
 * complete bookings efficiently
 
-The focus is on decision-making quality rather than just task completion.
+The focus is on **decision-making quality and efficiency**, not just task completion.
 
 ---
 
@@ -48,27 +54,29 @@ The focus is on decision-making quality rather than just task completion.
 
 ## Tasks
 
-* Easy: book any available room
-* Medium: book the correct room type
-* Hard: complete booking efficiently with minimal steps
+* **Easy** → Book any available room
+* **Medium** → Book the correct room type
+* **Hard** → Complete booking efficiently with minimal steps
 
 ---
 
 ## Reward Design
 
-* correct booking → +1.0
-* availability check → +0.2
-* incorrect booking → -0.5
-* invalid action → -0.1
+* +1.0 → Correct booking
+* +0.2 → Availability check
+* -0.5 → Incorrect booking
+* -0.1 → Invalid action
 
-The reward function encourages both correctness and efficiency.
+The reward system balances correctness with efficiency.
 
 ---
 
 ## Agent
 
-The agent uses an OpenAI-compatible client with a Hugging Face inference router.
-Model used: `Qwen/Qwen2.5-72B-Instruct`.
+The agent uses an OpenAI-compatible client via the Hugging Face inference router.
+
+**Model used:**
+`Qwen/Qwen2.5-72B-Instruct`
 
 ---
 
@@ -78,8 +86,13 @@ Model used: `Qwen/Qwen2.5-72B-Instruct`.
 
 ```bash
 docker build -t hotel-env .
-docker run -e API_BASE_URL="https://router.huggingface.co/v1" -e MODEL_NAME="Qwen/Qwen2.5-72B-Instruct" -e HF_TOKEN="your_token" hotel-env
+docker run -e API_BASE_URL="https://router.huggingface.co/v1" \
+           -e MODEL_NAME="Qwen/Qwen2.5-72B-Instruct" \
+           -e HF_TOKEN="your_token" \
+           hotel-env
 ```
+
+---
 
 ### Local
 
@@ -89,6 +102,14 @@ venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn server.app:app --host 0.0.0.0 --port 7860
 ```
+
+---
+
+## API Access
+
+After running, open:
+
+http://localhost:7860/docs
 
 ---
 
@@ -108,22 +129,27 @@ hotel-env/
 
 ## Notes
 
-This environment is intentionally kept simple but structured to reflect real-world booking logic.
-It can be extended with date handling, multiple users, and pricing strategies.
+This environment is intentionally simple but structured to reflect real-world booking logic.
+It can be extended with:
+
+* date-based booking conflicts
+* multiple users
+* pricing strategies
+* dynamic availability
 
 ---
 
-## Author
+## Team
 
-Vishal Patel
+* Vishal Patel
+* Mukesh Tiwari
+* Rishi Patel
 
 ---
-title: Hotel Env
-emoji: 😻
-colorFrom: indigo
-colorTo: purple
-sdk: docker
-pinned: false
----
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+## Links
+
+* Hugging Face Space: https://huggingface.co/spaces/infiniter011/hotel-env
+* GitHub Repository: https://github.com/vishalpatel011/hotel-env
+
+---

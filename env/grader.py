@@ -1,48 +1,53 @@
 def grade_easy(env):
-    # Any booking is success
-    if len(env.bookings) > 0:
-        return 1.0
-    return 0.0
+    # Any booking success
+    return 1.0 if len(env.bookings) > 0 else 0.0
 
 
 def grade_medium(env):
-    # Correct room type booking
     if not env.bookings:
         return 0.0
 
-    booked_room_id = env.bookings[0]
+    booking = env.bookings[0]
 
     for room in env.rooms:
-        if room.id == booked_room_id:
+        if room.id == booking["room_id"]:
             if room.type == env.current_request.room_type:
                 return 1.0
             else:
-                return 0.3  # wrong type but still booked
+                return 0.3
 
     return 0.0
 
 
-def grade_hard(env, steps_taken):
-    # Smart behavior + correct booking
-
+def grade_hard(env):
     if not env.bookings:
         return 0.0
 
-    booked_room_id = env.bookings[0]
+    booking = env.bookings[0]
 
-    correct = False
+    # Check correct room type
+    correct_type = False
     for room in env.rooms:
-        if room.id == booked_room_id:
+        if room.id == booking["room_id"]:
             if room.type == env.current_request.room_type:
-                correct = True
+                correct_type = True
 
-    if not correct:
+    if not correct_type:
         return 0.2
 
-    # Penalize too many steps
-    if steps_taken <= 2:
+    # Check date validity
+    correct_dates = (
+        booking["check_in"] >= env.current_request.check_in and
+        booking["check_out"] <= env.current_request.check_out
+    )
+
+    if not correct_dates:
+        return 0.5
+
+    #  Efficiency (steps)
+    if env.steps <= 2:
         return 1.0
-    elif steps_taken <= 4:
+    elif env.steps <= 4:
         return 0.7
     else:
         return 0.4

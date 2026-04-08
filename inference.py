@@ -49,8 +49,8 @@ State:
 
 Actions:
 check_availability
-book_room
-cancel_booking
+book_room <room_id>
+cancel_booking <room_id>
 
 Return ONLY one action.
 """
@@ -63,16 +63,16 @@ Return ONLY one action.
 
         action = response.choices[0].message.content.strip().lower()
 
-        if "book" in action:
-            return "book_room"
-        elif "cancel" in action:
-            return "cancel_booking"
+        if action.startswith("book_room"):
+            return action
+        elif action.startswith("cancel_booking"):
+            return action
         else:
             return "check_availability"
 
     except Exception as e:
         print(f"[ERROR] LLM failed: {e}")
-        return "book_room"
+        return "check_availability"
 
 
 done = False

@@ -8,8 +8,10 @@ class HotelEnv:
         self.bookings = []
         self.current_request: BookingRequest = None
         self.done = False
+        self.steps = 0
 
     def reset(self):
+        self.steps = 0
         self.rooms = [
             Room(id=101, type="single", bookings=[]),
             Room(id=102, type="single", bookings=[]),
@@ -43,16 +45,24 @@ class HotelEnv:
         )
 
     def step(self, action: str):
+        self.steps += 1
         if self.done:
             return self.get_state(), 0.0, True, {}
 
         if action == "check_availability":
             return self.get_state(), 0.1, False, {}
 
-        elif action == "book_room":
-            for room in self.rooms:
-                if room.type == self.current_request.room_type:
+        elif action.startswith("book_room"):
+            parts = action.split()
+            target_room_id = None
+            if len(parts) > 1 and parts[1].isdigit():
+                target_room_id = int(parts[1])
 
+            if target_room_id is None:
+                return self.get_state(), -0.5, False, {}
+
+            for room in self.rooms:
+                if room.id == target_room_id:
                     conflict = False
                     for booking in (room.bookings or []):   # ✅ safe
                         if self.is_conflict(
@@ -77,7 +87,7 @@ class HotelEnv:
 
             return self.get_state(), -0.5, False, {}
 
-        elif action == "cancel_booking":
+        elif action.startswith("cancel_booking"):
             if not self.bookings:
                 return self.get_state(), -0.1, False, {}
 

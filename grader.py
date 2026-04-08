@@ -15,7 +15,7 @@ def grade_medium(env):
     return 0.0
 
 
-def grade_hard(env, steps_taken=1):
+def grade_hard(env):
     if not env.bookings:
         return 0.0
 
@@ -29,6 +29,8 @@ def grade_hard(env, steps_taken=1):
 
     if not correct:
         return 0.2
+
+    steps_taken = getattr(env, "steps", 1)
 
     if steps_taken <= 2:
         return 1.0

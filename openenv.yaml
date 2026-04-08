@@ -1,6 +1,6 @@
 name: hotel-booking-env
 description: A real-world hotel booking simulation environment
-version: 1.0
+version: "1.0"
 
 env: env.environment:HotelEnv
 
@@ -19,12 +19,12 @@ reward_range: [0.0, 1.0]
 tasks:
   - name: easy
     description: Book any available room
-    grader: env.grader:grade_easy
+    grader: grader:grade_easy
 
   - name: medium
     description: Book correct room type
-    grader: env.grader:grade_medium
+    grader: grader:grade_medium
 
   - name: hard
     description: Book efficiently with minimum steps
-    grader: env.grader:grade_hard
+    grader: grader:grade_hard

@@ -11,7 +11,7 @@ TASKS = [
     },
     {
         "name": "hard",
-        "description": "Book correct room with valid dates and efficiency",
+        "description": "Book efficiently with minimum steps",
         "grader": "grade_hard"
     }
 ]

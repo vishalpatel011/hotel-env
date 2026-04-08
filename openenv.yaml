@@ -26,5 +26,9 @@ tasks:
     grader: env.grader:grade_medium
 
   - name: hard
-    description: Book efficiently with minimum steps
+    description: Book efficiently
     grader: env.grader:grade_hard
+
+  - name: bonus
+    description: Complete any valid booking
+    grader: env.tasks:grade_bonus

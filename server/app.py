@@ -1,8 +1,13 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 from env.environment import HotelEnv
 
 app = FastAPI()
 env = HotelEnv()
+
+# 🔥 Request model (IMPORTANT)
+class ActionRequest(BaseModel):
+    action: str
 
 @app.get("/")
 def home():
@@ -14,15 +19,15 @@ def reset():
     return {"state": str(state)}
 
 @app.post("/step")
-def step(action: str = "book_room"):
-    state, reward, done, _ = env.step(action)
+def step(req: ActionRequest):
+    state, reward, done, _ = env.step(req.action)
     return {
         "state": str(state),
         "reward": reward,
         "done": done
     }
 
-# 🔥 ADD THIS PART (VERY IMPORTANT)
+# 🔥 REQUIRED FOR OPENENV
 def main():
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=7860)

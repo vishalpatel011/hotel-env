@@ -3,18 +3,15 @@ import json
 from openai import OpenAI
 from env.environment import HotelEnv
 
-# 🔹 Safe env variables (IMPORTANT)
 API_BASE = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
-HF_TOKEN = os.getenv("HF_TOKEN", "dummy")  # fallback to avoid crash
+HF_TOKEN = os.getenv("HF_TOKEN", "dummy")
 MODEL = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 
-# 🔹 Setup client
 client = OpenAI(
     base_url=API_BASE,
     api_key=HF_TOKEN
 )
 
-# 🔹 Init env
 env = HotelEnv()
 
 print(f"[START] task=hotel env=openenv model={MODEL}")
@@ -25,7 +22,6 @@ rewards = []
 
 def get_action(state):
     try:
-        # 🔥 Convert state to JSON
         state_dict = {
             "rooms": [
                 {
@@ -41,22 +37,15 @@ def get_action(state):
             }
         }
 
-        state_json = json.dumps(state_dict)
-
         prompt = f"""
 You are an intelligent hotel booking agent.
 
 Goal:
-- Book correct room type
-- Avoid date conflicts
-- Maximize reward
-
-Rules:
-- If matching room available → book_room
-- Avoid unnecessary checks
+- Book correct room
+- Avoid conflicts
 
 State:
-{state_json}
+{json.dumps(state_dict)}
 
 Actions:
 check_availability
@@ -69,30 +58,23 @@ Return ONLY one action.
         response = client.chat.completions.create(
             model=MODEL,
             messages=[{"role": "user", "content": prompt}],
-            temperature=0,
-            timeout=5  # 🔥 prevent hanging
+            temperature=0
         )
 
         action = response.choices[0].message.content.strip().lower()
 
-        # 🔥 Normalize output
-        if "book_room" in action:
+        if "book" in action:
             return "book_room"
         elif "cancel" in action:
             return "cancel_booking"
-        elif "check" in action:
-            return "check_availability"
         else:
-            return "book_room"
+            return "check_availability"
 
     except Exception as e:
         print(f"[ERROR] LLM failed: {e}")
-
-        # 🔥 FALLBACK (CRITICAL)
         return "book_room"
 
 
-# 🔹 Run agent
 done = False
 
 for step in range(6):
@@ -112,7 +94,6 @@ for step in range(6):
         break
 
 
-# 🔹 Final output
 success = done
 score = max(rewards) if rewards else 0.0
 reward_str = ",".join([f"{r:.2f}" for r in rewards])

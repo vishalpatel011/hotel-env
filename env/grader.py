@@ -1,23 +1,34 @@
+def normalize(score):
+    # ensure strictly between (0,1)
+    if score <= 0:
+        return 0.01
+    if score >= 1:
+        return 0.99
+    return score
+
+
 def grade_easy(env):
-    return 1.0 if len(env.bookings) > 0 else 0.0
+    score = 1.0 if len(env.bookings) > 0 else 0.0
+    return normalize(score)
 
 
 def grade_medium(env):
     if not env.bookings:
-        return 0.0
+        return 0.01
 
     booked_room_id = env.bookings[0]
 
     for room in env.rooms:
         if room.id == booked_room_id:
-            return 1.0 if room.type == env.current_request.room_type else 0.3
+            score = 1.0 if room.type == env.current_request.room_type else 0.3
+            return normalize(score)
 
-    return 0.0
+    return 0.01
 
 
 def grade_hard(env):
     if not env.bookings:
-        return 0.0
+        return 0.01
 
     booked_room_id = env.bookings[0]
 
@@ -33,8 +44,10 @@ def grade_hard(env):
     steps_taken = getattr(env, "steps", 1)
 
     if steps_taken <= 2:
-        return 1.0
+        score = 1.0
     elif steps_taken <= 4:
-        return 0.7
+        score = 0.7
     else:
-        return 0.4
+        score = 0.4
+
+    return normalize(score)

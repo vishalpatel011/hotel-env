@@ -9,12 +9,12 @@ env = HotelEnv()
 def home():
     return {"message": "Hotel Booking Environment Running"}
 
-@app.get("/reset")
+@app.post("/reset")
 def reset():
     state = env.reset()
     return {"state": str(state)}
 
-@app.get("/step")
+@app.post("/step")
 def step(action: str = "book_room"):
     state, reward, done, _ = env.step(action)
     return {

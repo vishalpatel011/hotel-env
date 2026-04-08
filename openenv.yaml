@@ -4,27 +4,15 @@ version: "1.0"
 
 env: env.environment:HotelEnv
 
-actions:
-  - check_availability
-  - book_room
-  - cancel_booking
-
-observation:
-  rooms: list
-  bookings: list
-  request: object
-
-reward_range: [0.0, 1.0]
-
 tasks:
   - name: easy
     description: Book any available room
-    grader: grader:grade_easy
+    grader: env.grader:grade_easy
 
   - name: medium
     description: Book correct room type
-    grader: grader:grade_medium
+    grader: env.grader:grade_medium
 
   - name: hard
     description: Book efficiently with minimum steps
-    grader: grader:grade_hard
+    grader: env.grader:grade_hard

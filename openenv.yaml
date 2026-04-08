@@ -26,5 +26,5 @@ tasks:
     grader: env.grader:grade_medium
 
   - name: hard
-    description: Handle booking and cancellation properly
+    description: Book efficiently with minimum steps
     grader: env.grader:grade_hard

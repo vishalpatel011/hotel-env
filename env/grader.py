@@ -1,7 +1,5 @@
 def grade_easy(env):
-    if len(env.bookings) > 0:
-        return 1.0
-    return 0.0
+    return 1.0 if len(env.bookings) > 0 else 0.0
 
 
 def grade_medium(env):
@@ -12,16 +10,12 @@ def grade_medium(env):
 
     for room in env.rooms:
         if room.id == booked_room_id:
-            if room.type == env.current_request.room_type:
-                return 1.0
-            else:
-                return 0.3  # wrong type but still booked
+            return 1.0 if room.type == env.current_request.room_type else 0.3
 
     return 0.0
 
 
 def grade_hard(env, steps_taken=1):
-
     if not env.bookings:
         return 0.0
 

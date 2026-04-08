@@ -1,16 +1,17 @@
 from env.grader import grade_easy, grade_medium, grade_hard
 
+
 tasks = [
     {
         "name": "easy",
-        "grader": grade_easy,
+        "grader": lambda env: float(grade_easy(env)),
     },
     {
         "name": "medium",
-        "grader": grade_medium,
+        "grader": lambda env: float(grade_medium(env)),
     },
     {
         "name": "hard",
-        "grader": grade_hard,
-    }
+        "grader": lambda env: float(grade_hard(env)),
+    },
 ]

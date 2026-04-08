@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from env.environment import HotelEnv
 
 app = FastAPI()
-
 env = HotelEnv()
 
 @app.get("/")
@@ -22,3 +21,11 @@ def step(action: str = "book_room"):
         "reward": reward,
         "done": done
     }
+
+# 🔥 ADD THIS PART (VERY IMPORTANT)
+def main():
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=7860)
+
+if __name__ == "__main__":
+    main()

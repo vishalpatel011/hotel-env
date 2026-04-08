@@ -4,6 +4,18 @@ version: "1.0"
 
 env: env.environment:HotelEnv
 
+actions:
+  - check_availability
+  - book_room
+  - cancel_booking
+
+observation:
+  rooms: list
+  bookings: list
+  request: object
+
+reward_range: [0.0, 1.0]
+
 tasks:
   - name: easy
     description: Book any available room

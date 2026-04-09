@@ -5,3 +5,16 @@ runtime: fastapi
 app: server.app:app
 port: 7860
 description: Hotel booking simulation OpenEnv environment
+tasks:
+  - id: easy
+    name: easy
+    description: Book any available room
+    grader: env.grader:grade_easy
+  - id: medium
+    name: medium
+    description: Book requested room type
+    grader: env.grader:grade_medium
+  - id: hard
+    name: hard
+    description: Book correctly and efficiently
+    grader: env.grader:grade_hard

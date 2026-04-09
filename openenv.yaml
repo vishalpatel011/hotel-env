@@ -1,34 +1,7 @@
+spec_version: 1
 name: hotel-booking-env
-description: A real-world hotel booking simulation environment
-version: "1.0"
-
-env: env.environment:HotelEnv
-
-actions:
-  - check_availability
-  - book_room
-  - cancel_booking
-
-observation:
-  rooms: list
-  bookings: list
-  request: object
-
-reward_range: [0.0, 1.0]
-
-tasks:
-  - name: easy
-    description: Book any available room
-    grader: env.grader:grade_easy
-
-  - name: medium
-    description: Book correct room type
-    grader: env.grader:grade_medium
-
-  - name: hard
-    description: Book efficiently
-    grader: env.grader:grade_hard
-
-  - name: bonus
-    description: Complete any valid booking
-    grader: env.tasks:grade_bonus
+type: space
+runtime: fastapi
+app: server.app:app
+port: 7860
+description: Hotel booking simulation OpenEnv environment

@@ -1,18 +1,83 @@
-from fastapi import FastAPI
+from fastapi import Body, FastAPI
 from pydantic import BaseModel
 from env.environment import HotelEnv
+from env.grader import grade_easy, grade_medium, grade_hard
 
 app = FastAPI()
 env = HotelEnv()
+SCORE_FLOOR = 0.001
+SCORE_CEILING = 0.999
+
+TASKS = [
+    {
+        "id": "easy",
+        "name": "easy",
+        "difficulty": "easy",
+        "description": "Book any available room",
+        "grader": "grade_easy",
+    },
+    {
+        "id": "medium",
+        "name": "medium",
+        "difficulty": "medium",
+        "description": "Book the requested room type",
+        "grader": "grade_medium",
+    },
+    {
+        "id": "hard",
+        "name": "hard",
+        "difficulty": "hard",
+        "description": "Book correctly and efficiently",
+        "grader": "grade_hard",
+    },
+]
 
 
 class ActionRequest(BaseModel):
     action: str
 
 
+class GradeRequest(BaseModel):
+    action: str | None = None
+    task: str | None = None
+    task_id: str | None = None
+
+
+def _strict_score(value: float) -> float:
+    score = round(float(value), 3)
+    if score <= SCORE_FLOOR:
+        return SCORE_FLOOR
+    if score >= SCORE_CEILING:
+        return SCORE_CEILING
+    return score
+
+
+def _resolve_task_name(request: GradeRequest) -> str:
+    candidate = (request.task or request.task_id or "easy").strip().lower()
+    valid = {"easy", "medium", "hard"}
+    return candidate if candidate in valid else "easy"
+
+
 @app.get("/")
 def home():
     return {"message": "Hotel Booking Environment Running"}
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok", "ready": True}
+
+
+@app.get("/tasks")
+def list_tasks():
+    return [
+        {
+            **task,
+            "grader_endpoint": "/grader",
+            "action_schema": {"type": "string", "example": "book_room"},
+        }
+        for task in TASKS
+    ]
 
 
 @app.post("/reset")
@@ -29,6 +94,23 @@ def step(req: ActionRequest):
         "state": state.model_dump(),   # ✅ FIXED (no str())
         "reward": reward,
         "done": done
+    }
+
+
+@app.post("/grader")
+def grader(request: GradeRequest = Body(default=GradeRequest())):
+    task_name = _resolve_task_name(request)
+    grader_map = {
+        "easy": grade_easy,
+        "medium": grade_medium,
+        "hard": grade_hard,
+    }
+    grader_fn = grader_map[task_name]
+    score = _strict_score(grader_fn(env))
+    return {
+        "score": score,
+        "task": task_name,
+        "details": {"grader": grader_fn.__name__},
     }
 
 

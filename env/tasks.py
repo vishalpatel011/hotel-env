@@ -38,3 +38,13 @@ tasks = [
         "grader": grade_bonus,
     },
 ]
+
+# Common validator discovery names
+TASKS = tasks
+
+TASK_GRADERS = {
+    "easy": grade_easy,
+    "medium": grade_medium,
+    "hard": grade_hard,
+    "bonus": grade_bonus,
+}

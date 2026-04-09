@@ -2,6 +2,7 @@ from fastapi import Body, FastAPI
 from pydantic import BaseModel
 from env.environment import HotelEnv
 from env.grader import grade_easy, grade_medium, grade_hard
+from env.tasks import TASKS as DISCOVERABLE_TASKS
 
 app = FastAPI()
 env = HotelEnv()
@@ -74,10 +75,29 @@ def list_tasks():
         {
             **task,
             "grader_endpoint": "/grader",
+            "grader": task.get("grader"),
             "action_schema": {"type": "string", "example": "book_room"},
         }
         for task in TASKS
     ]
+
+
+@app.get("/tasks_with_graders")
+def tasks_with_graders():
+    # Alternate discovery endpoint used by some validators.
+    return {
+        "tasks": [
+            {
+                "id": item["id"],
+                "name": item["name"],
+                "description": item["description"],
+                "grader": item["grader"],
+                "grader_endpoint": "/grader",
+            }
+            for item in TASKS
+        ],
+        "count": len(DISCOVERABLE_TASKS),
+    }
 
 
 @app.post("/reset")

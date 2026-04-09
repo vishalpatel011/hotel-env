@@ -101,7 +101,7 @@ def list_tasks():
             **task,
             "task_id": idx + 1,
             "grader_endpoint": "/grader",
-            "grader": task.get("grader"),
+            "grader": f"grader:{task.get('grader')}",
             "action_schema": {"type": "string", "example": "book_room"},
         }
         for idx, task in enumerate(TASKS)
@@ -118,7 +118,7 @@ def tasks_with_graders():
                 "task_id": idx + 1,
                 "name": item["name"],
                 "description": item["description"],
-                "grader": item["grader"],
+                "grader": f"grader:{item['grader']}",
                 "grader_endpoint": "/grader",
             }
             for idx, item in enumerate(TASKS)
@@ -167,6 +167,12 @@ def grader(payload: dict | GradeRequest | None = Body(default=None)):
         "task": task_name,
         "details": {"grader": grader_fn.__name__},
     }
+
+
+@app.post("/grade")
+def grade(payload: dict | GradeRequest | None = Body(default=None)):
+    # Compatibility alias for validators using /grade.
+    return grader(payload)
 
 
 # 🔥 REQUIRED

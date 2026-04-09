@@ -7,14 +7,17 @@ port: 7860
 description: Hotel booking simulation OpenEnv environment
 tasks:
   - id: easy
+    task_id: 1
     name: easy
     description: Book any available room
-    grader: env.grader:grade_easy
+    grader: grader:grade_easy
   - id: medium
+    task_id: 2
     name: medium
     description: Book requested room type
-    grader: env.grader:grade_medium
+    grader: grader:grade_medium
   - id: hard
+    task_id: 3
     name: hard
     description: Book correctly and efficiently
-    grader: env.grader:grade_hard
+    grader: grader:grade_hard

@@ -59,6 +59,31 @@ def _resolve_task_name(request: GradeRequest) -> str:
     return candidate if candidate in valid else "easy"
 
 
+def _resolve_task_name_from_payload(payload: dict | None) -> str:
+    if not isinstance(payload, dict):
+        return "easy"
+
+    for key in ("task", "task_id", "id", "name", "difficulty"):
+        value = payload.get(key)
+        if isinstance(value, str):
+            candidate = value.strip().lower()
+            if candidate in {"easy", "medium", "hard"}:
+                return candidate
+        if isinstance(value, int):
+            if value == 1:
+                return "easy"
+            if value == 2:
+                return "medium"
+            if value == 3:
+                return "hard"
+        if isinstance(value, dict):
+            nested = _resolve_task_name_from_payload(value)
+            if nested in {"easy", "medium", "hard"}:
+                return nested
+
+    return "easy"
+
+
 @app.get("/")
 def home():
     return {"message": "Hotel Booking Environment Running"}
@@ -74,11 +99,12 @@ def list_tasks():
     return [
         {
             **task,
+            "task_id": idx + 1,
             "grader_endpoint": "/grader",
             "grader": task.get("grader"),
             "action_schema": {"type": "string", "example": "book_room"},
         }
-        for task in TASKS
+        for idx, task in enumerate(TASKS)
     ]
 
 
@@ -89,12 +115,13 @@ def tasks_with_graders():
         "tasks": [
             {
                 "id": item["id"],
+                "task_id": idx + 1,
                 "name": item["name"],
                 "description": item["description"],
                 "grader": item["grader"],
                 "grader_endpoint": "/grader",
             }
-            for item in TASKS
+            for idx, item in enumerate(TASKS)
         ],
         "count": len(DISCOVERABLE_TASKS),
     }
@@ -118,15 +145,23 @@ def step(req: ActionRequest):
 
 
 @app.post("/grader")
-def grader(request: GradeRequest = Body(default=GradeRequest())):
-    task_name = _resolve_task_name(request)
+def grader(payload: dict | GradeRequest | None = Body(default=None)):
+    if isinstance(payload, GradeRequest):
+        task_name = _resolve_task_name(payload)
+    else:
+        task_name = _resolve_task_name_from_payload(payload)
+
     grader_map = {
         "easy": grade_easy,
         "medium": grade_medium,
         "hard": grade_hard,
     }
     grader_fn = grader_map[task_name]
-    score = _strict_score(grader_fn(env))
+    try:
+        score = _strict_score(grader_fn(env))
+    except Exception:
+        # Keep scores strictly inside (0, 1) even if env state is invalid.
+        score = 0.5
     return {
         "score": score,
         "task": task_name,

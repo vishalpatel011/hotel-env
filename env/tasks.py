@@ -30,6 +30,8 @@ tasks = [
 
 # Common validator discovery names
 TASKS = tasks
+TASKS_WITH_GRADERS = tasks
+TASK_LIST = tasks
 
 TASK_GRADERS = {
     "easy": grade_easy,
@@ -37,4 +39,13 @@ TASK_GRADERS = {
     "hard": grade_hard,
 }
 
-__all__ = ["tasks", "TASKS", "TASK_GRADERS"]
+GRADERS = TASK_GRADERS
+
+__all__ = [
+    "tasks",
+    "TASKS",
+    "TASKS_WITH_GRADERS",
+    "TASK_LIST",
+    "TASK_GRADERS",
+    "GRADERS",
+]

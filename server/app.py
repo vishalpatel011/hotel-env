@@ -15,6 +15,12 @@ TASK_GRADER_PATH = {
     "medium": "env.grader:grade_medium",
     "hard": "env.grader:grade_hard",
 }
+TASK_ID_TO_NAME = {
+    1: "easy",
+    2: "medium",
+    3: "hard",
+}
+VALID_TASKS = set(TASK_GRADER_PATH)
 
 
 class ActionRequest(BaseModel):
@@ -23,8 +29,8 @@ class ActionRequest(BaseModel):
 
 class GradeRequest(BaseModel):
     action: str | None = None
-    task: str | None = None
-    task_id: str | None = None
+    task: str | int | None = None
+    task_id: str | int | None = None
 
 
 def _strict_score(value: float) -> float:
@@ -36,10 +42,27 @@ def _strict_score(value: float) -> float:
     return score
 
 
+def _normalize_task_candidate(value: str | int | None) -> str | None:
+    if isinstance(value, int):
+        return TASK_ID_TO_NAME.get(value)
+
+    if not isinstance(value, str):
+        return None
+
+    candidate = value.strip().lower()
+    if candidate in VALID_TASKS:
+        return candidate
+    if candidate.isdigit():
+        return TASK_ID_TO_NAME.get(int(candidate))
+    return None
+
+
 def _resolve_task_name(request: GradeRequest) -> str:
-    candidate = (request.task or request.task_id or "easy").strip().lower()
-    valid = {"easy", "medium", "hard"}
-    return candidate if candidate in valid else "easy"
+    return (
+        _normalize_task_candidate(request.task)
+        or _normalize_task_candidate(request.task_id)
+        or "easy"
+    )
 
 
 def _resolve_task_name_from_payload(payload: dict | None) -> str:
@@ -48,20 +71,12 @@ def _resolve_task_name_from_payload(payload: dict | None) -> str:
 
     for key in ("task", "task_id", "id", "name", "difficulty"):
         value = payload.get(key)
-        if isinstance(value, str):
-            candidate = value.strip().lower()
-            if candidate in {"easy", "medium", "hard"}:
-                return candidate
-        if isinstance(value, int):
-            if value == 1:
-                return "easy"
-            if value == 2:
-                return "medium"
-            if value == 3:
-                return "hard"
+        candidate = _normalize_task_candidate(value)
+        if candidate:
+            return candidate
         if isinstance(value, dict):
             nested = _resolve_task_name_from_payload(value)
-            if nested in {"easy", "medium", "hard"}:
+            if nested in VALID_TASKS:
                 return nested
 
     return "easy"
@@ -87,6 +102,7 @@ def list_tasks():
             "description": task["description"],
             "grader_endpoint": "/grader",
             "grader": TASK_GRADER_PATH.get(task["id"], "env.grader:grade_easy"),
+            "grader_path": TASK_GRADER_PATH.get(task["id"], "env.grader:grade_easy"),
             "action_schema": {"type": "string", "example": "book_room"},
         }
         for idx, task in enumerate(TASKS)
@@ -103,6 +119,7 @@ def tasks_with_graders():
                 "name": item["name"],
                 "description": item["description"],
                 "grader": TASK_GRADER_PATH.get(item["id"], "env.grader:grade_easy"),
+                "grader_path": TASK_GRADER_PATH.get(item["id"], "env.grader:grade_easy"),
                 "grader_endpoint": "/grader",
             }
             for idx, item in enumerate(TASKS)

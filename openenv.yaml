@@ -6,14 +6,20 @@ app: server.app:app
 port: 7860
 
 tasks:
-  - name: easy
+  - id: easy
+    task_id: 1
+    name: easy
     description: Book any available room
     grader: env.grader:grade_easy
 
-  - name: medium
+  - id: medium
+    task_id: 2
+    name: medium
     description: Book correct room type
     grader: env.grader:grade_medium
 
-  - name: hard
+  - id: hard
+    task_id: 3
+    name: hard
     description: Book efficiently
     grader: env.grader:grade_hard

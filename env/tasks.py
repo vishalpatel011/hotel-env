@@ -7,7 +7,7 @@ tasks = [
         "task_id": 1,
         "name": "easy",
         "description": "Book any available room.",
-        "grader": grade_easy,
+        "grader": "env.grader:grade_easy",
         "grader_path": "env.grader:grade_easy",
     },
     {
@@ -15,7 +15,7 @@ tasks = [
         "task_id": 2,
         "name": "medium",
         "description": "Book the requested room type.",
-        "grader": grade_medium,
+        "grader": "env.grader:grade_medium",
         "grader_path": "env.grader:grade_medium",
     },
     {
@@ -23,12 +23,11 @@ tasks = [
         "task_id": 3,
         "name": "hard",
         "description": "Book correctly and efficiently.",
-        "grader": grade_hard,
+        "grader": "env.grader:grade_hard",
         "grader_path": "env.grader:grade_hard",
     },
 ]
 
-# Common validator discovery names
 TASKS = tasks
 TASKS_WITH_GRADERS = tasks
 TASK_LIST = tasks

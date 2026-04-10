@@ -9,29 +9,12 @@ env = HotelEnv()
 SCORE_FLOOR = 0.001
 SCORE_CEILING = 0.999
 
-TASKS = [
-    {
-        "id": "easy",
-        "name": "easy",
-        "difficulty": "easy",
-        "description": "Book any available room",
-        "grader": "grade_easy",
-    },
-    {
-        "id": "medium",
-        "name": "medium",
-        "difficulty": "medium",
-        "description": "Book the requested room type",
-        "grader": "grade_medium",
-    },
-    {
-        "id": "hard",
-        "name": "hard",
-        "difficulty": "hard",
-        "description": "Book correctly and efficiently",
-        "grader": "grade_hard",
-    },
-]
+TASKS = DISCOVERABLE_TASKS
+TASK_GRADER_PATH = {
+    "easy": "env.grader:grade_easy",
+    "medium": "env.grader:grade_medium",
+    "hard": "env.grader:grade_hard",
+}
 
 
 class ActionRequest(BaseModel):
@@ -98,10 +81,12 @@ def health():
 def list_tasks():
     return [
         {
-            **task,
-            "task_id": idx + 1,
+            "id": task["id"],
+            "task_id": task.get("task_id", idx + 1),
+            "name": task["name"],
+            "description": task["description"],
             "grader_endpoint": "/grader",
-            "grader": f"grader:{task.get('grader')}",
+            "grader": TASK_GRADER_PATH.get(task["id"], "env.grader:grade_easy"),
             "action_schema": {"type": "string", "example": "book_room"},
         }
         for idx, task in enumerate(TASKS)
@@ -110,20 +95,19 @@ def list_tasks():
 
 @app.get("/tasks_with_graders")
 def tasks_with_graders():
-    # Alternate discovery endpoint used by some validators.
     return {
         "tasks": [
             {
                 "id": item["id"],
-                "task_id": idx + 1,
+                "task_id": item.get("task_id", idx + 1),
                 "name": item["name"],
                 "description": item["description"],
-                "grader": f"grader:{item['grader']}",
+                "grader": TASK_GRADER_PATH.get(item["id"], "env.grader:grade_easy"),
                 "grader_endpoint": "/grader",
             }
             for idx, item in enumerate(TASKS)
         ],
-        "count": len(DISCOVERABLE_TASKS),
+        "count": len(TASKS),
     }
 
 
@@ -165,7 +149,7 @@ def grader(payload: dict | GradeRequest | None = Body(default=None)):
     return {
         "score": score,
         "task": task_name,
-        "details": {"grader": grader_fn.__name__},
+        "details": {"grader": TASK_GRADER_PATH.get(task_name, "env.grader:grade_easy")},
     }
 
 

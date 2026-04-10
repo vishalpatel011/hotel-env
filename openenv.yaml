@@ -1,21 +1,6 @@
+spec_version: 1
 name: hotel-booking-env
-env: env.openenv_env:HotelEnvOpen
-
-tasks:
-  - id: easy
-    task_id: 1
-    name: easy
-    description: Book any available room
-    grader: grader:grade_easy
-
-  - id: medium
-    task_id: 2
-    name: medium
-    description: Book requested room type
-    grader: grader:grade_medium
-
-  - id: hard
-    task_id: 3
-    name: hard
-    description: Book correctly and efficiently
-    grader: grader:grade_hard
+type: space
+runtime: fastapi
+app: server.app:app
+port: 7860

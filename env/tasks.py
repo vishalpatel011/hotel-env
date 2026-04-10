@@ -8,7 +8,7 @@ tasks = [
         "name": "easy",
         "description": "Book any available room.",
         "grader": grade_easy,
-        "grader_path": "grader:grade_easy",
+        "grader_path": "env.grader:grade_easy",
     },
     {
         "id": "medium",
@@ -16,7 +16,7 @@ tasks = [
         "name": "medium",
         "description": "Book the requested room type.",
         "grader": grade_medium,
-        "grader_path": "grader:grade_medium",
+        "grader_path": "env.grader:grade_medium",
     },
     {
         "id": "hard",
@@ -24,7 +24,7 @@ tasks = [
         "name": "hard",
         "description": "Book correctly and efficiently.",
         "grader": grade_hard,
-        "grader_path": "grader:grade_hard",
+        "grader_path": "env.grader:grade_hard",
     },
 ]
 
@@ -36,3 +36,5 @@ TASK_GRADERS = {
     "medium": grade_medium,
     "hard": grade_hard,
 }
+
+__all__ = ["tasks", "TASKS", "TASK_GRADERS"]

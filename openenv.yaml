@@ -2,11 +2,20 @@ name: hotel-booking-env
 env: env.openenv_env:HotelEnvOpen
 
 tasks:
-  - name: easy
-    grader: grader:grade_easy
+  - id: easy
+    task_id: 1
+    name: easy
+    description: Book any available room
+    grader: env.grader:grade_easy
 
-  - name: medium
-    grader: grader:grade_medium
+  - id: medium
+    task_id: 2
+    name: medium
+    description: Book requested room type
+    grader: env.grader:grade_medium
 
-  - name: hard
-    grader: grader:grade_hard
+  - id: hard
+    task_id: 3
+    name: hard
+    description: Book correctly and efficiently
+    grader: env.grader:grade_hard

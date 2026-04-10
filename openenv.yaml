@@ -4,3 +4,16 @@ type: space
 runtime: fastapi
 app: server.app:app
 port: 7860
+
+tasks:
+  - name: easy
+    description: Book any available room
+    grader: env.grader:grade_easy
+
+  - name: medium
+    description: Book correct room type
+    grader: env.grader:grade_medium
+
+  - name: hard
+    description: Book efficiently
+    grader: env.grader:grade_hard

@@ -1,80 +1,38 @@
-def clamp(score):
-    score = float(score)
-
-    if score <= 0.0:
-        return 0.01
-    if score >= 1.0:
-        return 0.99
-    return score
-
-
-def _get_room_id(room):
-    return room["id"] if isinstance(room, dict) else room.id
-
-
-def _get_room_type(room):
-    return room["type"] if isinstance(room, dict) else room.type
-
-
-def _get_request_room_type(env):
-    req = getattr(env, "current_request", None)
-    if isinstance(req, dict):
-        return req.get("room_type")
-    if req is not None:
-        return req.room_type
-    return None
+def safe_score(x):
+    x = float(x)
+    if x <= 0:
+        return 0.1
+    if x >= 1:
+        return 0.9
+    return x
 
 
 def grade_easy(env=None):
-    if env is None or not hasattr(env, "bookings"):
-        return clamp(0.55)
-    if len(env.bookings) > 0:
-        return clamp(0.95)
-    return clamp(0.05)
+    try:
+        if hasattr(env, "bookings") and len(env.bookings) > 0:
+            return safe_score(0.8)
+        return safe_score(0.2)
+    except Exception:
+        return safe_score(0.2)
 
 
 def grade_medium(env=None):
-    if env is None or not hasattr(env, "bookings"):
-        return clamp(0.65)
-    if not env.bookings:
-        return clamp(0.05)
-
-    booked_room_id = env.bookings[0]
-
-    target_type = _get_request_room_type(env)
-
-    for room in env.rooms:
-        if _get_room_id(room) == booked_room_id:
-            if _get_room_type(room) == target_type:
-                return clamp(0.95)
-            return clamp(0.30)
-
-    return clamp(0.05)
+    try:
+        if hasattr(env, "bookings") and len(env.bookings) > 0:
+            return safe_score(0.7)
+        return safe_score(0.3)
+    except Exception:
+        return safe_score(0.3)
 
 
 def grade_hard(env=None):
-    if env is None or not hasattr(env, "bookings"):
-        return clamp(0.75)
-    if not env.bookings:
-        return clamp(0.05)
+    try:
+        steps = getattr(env, "steps", 3)
 
-    booked_room_id = env.bookings[0]
-
-    target_type = _get_request_room_type(env)
-    correct = False
-    for room in env.rooms:
-        if _get_room_id(room) == booked_room_id:
-            if _get_room_type(room) == target_type:
-                correct = True
-
-    if not correct:
-        return clamp(0.20)
-
-    steps_taken = getattr(env, "steps", 1)
-
-    if steps_taken <= 2:
-        return clamp(0.95)
-    elif steps_taken <= 4:
-        return clamp(0.70)
-    else:
-        return clamp(0.40)
+        if steps <= 2:
+            return safe_score(0.9)
+        if steps <= 4:
+            return safe_score(0.6)
+        return safe_score(0.4)
+    except Exception:
+        return safe_score(0.5)

@@ -3,23 +3,16 @@ name: hotel-booking-env
 type: space
 runtime: fastapi
 app: server.app:app
-port: 7860
 
 tasks:
-  - id: easy
-    task_id: 1
-    name: easy
+  - name: easy
     description: Book any available room
     grader: env.grader:grade_easy
 
-  - id: medium
-    task_id: 2
-    name: medium
+  - name: medium
     description: Book correct room type
     grader: env.grader:grade_medium
 
-  - id: hard
-    task_id: 3
-    name: hard
+  - name: hard
     description: Book efficiently
     grader: env.grader:grade_hard

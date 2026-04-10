@@ -8,6 +8,23 @@ def clamp(score):
     return score
 
 
+def _get_room_id(room):
+    return room["id"] if isinstance(room, dict) else room.id
+
+
+def _get_room_type(room):
+    return room["type"] if isinstance(room, dict) else room.type
+
+
+def _get_request_room_type(env):
+    req = getattr(env, "current_request", None)
+    if isinstance(req, dict):
+        return req.get("room_type")
+    if req is not None:
+        return req.room_type
+    return None
+
+
 def grade_easy(env):
     if len(env.bookings) > 0:
         return clamp(0.95)
@@ -20,9 +37,11 @@ def grade_medium(env):
 
     booked_room_id = env.bookings[0]
 
+    target_type = _get_request_room_type(env)
+
     for room in env.rooms:
-        if room.id == booked_room_id:
-            if room.type == env.current_request.room_type:
+        if _get_room_id(room) == booked_room_id:
+            if _get_room_type(room) == target_type:
                 return clamp(0.95)
             return clamp(0.30)
 
@@ -35,10 +54,11 @@ def grade_hard(env):
 
     booked_room_id = env.bookings[0]
 
+    target_type = _get_request_room_type(env)
     correct = False
     for room in env.rooms:
-        if room.id == booked_room_id:
-            if room.type == env.current_request.room_type:
+        if _get_room_id(room) == booked_room_id:
+            if _get_room_type(room) == target_type:
                 correct = True
 
     if not correct:

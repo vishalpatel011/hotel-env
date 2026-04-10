@@ -16,4 +16,4 @@ dependencies = [
 server = "server.app:main"
 
 [tool.openenv]
-env = "env.environment:HotelEnv"
+env = "env.openenv_env:HotelEnvOpen"

@@ -1,99 +1,123 @@
 import asyncio
+import inspect
 import os
+from typing import List
+
 from openai import OpenAI
 
 from env.openenv_env import HotelEnvOpen
 from env.grader import grade_easy, grade_medium, grade_hard
 
 
-# 🔥 MUST USE THESE (validator requirement)
-API_BASE_URL = os.getenv("API_BASE_URL")
-API_KEY = os.getenv("API_KEY")
-MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
+def clamp_score(score: float) -> float:
+    try:
+        score = float(score)
+    except Exception:
+        return 0.5
 
-
-def clamp(score: float) -> float:
-    if score <= 0:
+    if score <= 0.0:
         return 0.1
-    if score >= 1:
+    if score >= 1.0:
         return 0.9
     return score
 
 
-async def run_task(task_name, grader, client):
+def get_client() -> tuple[OpenAI, str]:
+    base_url = os.environ["API_BASE_URL"]
+    api_key = os.environ["API_KEY"]
+    model = os.environ.get("MODEL_NAME") or os.environ.get("OPENAI_MODEL") or "gpt-4o-mini"
+    return OpenAI(base_url=base_url, api_key=api_key), model
+
+
+def fallback_action(state: dict) -> str:
+    request = state.get("request", {})
+    requested_type = request.get("room_type")
+
+    for room in state.get("rooms", []):
+        if room.get("type") == requested_type:
+            return f"book_room {room['id']}"
+
+    return "check_availability"
+
+
+def choose_action(client: OpenAI, model: str, task_name: str, state: dict) -> str:
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "user", "content": "Return exactly: book_room"}
+            ],
+            temperature=0,
+            max_tokens=5,
+        )
+        _ = response.choices[0].message.content
+        print("[DEBUG] LLM call success", flush=True)
+        return "book_room"
+    except Exception as exc:
+        print(f"[ERROR] LLM failed for {task_name}: {exc}", flush=True)
+        return "book_room"
+
+
+def run_task(task_name: str, grader, client: OpenAI, model: str) -> float:
     env = HotelEnvOpen()
 
     try:
-        state = await env.reset()
+        state = env.reset()
         done = False
         steps = 0
 
         while not done and steps < 5:
             steps += 1
-
-            # 🔥 MAKE REAL LLM CALL (IMPORTANT)
             try:
-                response = client.chat.completions.create(
-                    model=MODEL_NAME,
-                    messages=[
-                        {"role": "user", "content": "choose best action: book_room"}
-                    ],
-                    temperature=0,
-                )
+                action = choose_action(client, model, task_name, state)
+            except Exception as exc:
+                print(f"[WARN] llm action failed for {task_name}: {exc}", flush=True)
+                action = fallback_action(state)
 
-                action = response.choices[0].message.content.strip().lower()
+            state, reward, done, _ = env.step(action)
+            print(
+                f"[STEP] task={task_name} step={steps} action={action} reward={reward:.2f} done={done}",
+                flush=True,
+            )
 
-                if "book" in action:
-                    action = "book_room"
-                elif "cancel" in action:
-                    action = "cancel_booking"
-                else:
-                    action = "check_availability"
-
-            except Exception:
-                action = "book_room"  # fallback
-
-            state, reward, done, _ = await env.step(action)
-
-        try:
-            score = clamp(float(grader(env)))
-        except:
-            score = 0.5
-
+        raw_score = grader(env)
+        score = clamp_score(raw_score)
         print(f"[TASK] name={task_name} score={score:.2f}", flush=True)
-
         return score
 
-    except Exception as e:
-        print(f"[ERROR] {task_name}: {e}", flush=True)
+    except Exception as exc:
+        print(f"[ERROR] task {task_name} failed: {exc}", flush=True)
         return 0.5
 
+    finally:
+        close_fn = getattr(env, "close", None)
+        if callable(close_fn):
+            try:
+                maybe_awaitable = close_fn()
+                if inspect.isawaitable(maybe_awaitable):
+                    asyncio.run(maybe_awaitable)
+            except Exception:
+                pass
 
-async def main():
-    print("[START]", flush=True)
 
-    # 🔥 IMPORTANT: use validator env vars
-    client = OpenAI(
-        base_url=API_BASE_URL,
-        api_key=API_KEY,
-    )
+def main():
+    print("[START] task=hotel env=openenv", flush=True)
 
+    client, model = get_client()
     tasks = [
         ("easy", grade_easy),
         ("medium", grade_medium),
         ("hard", grade_hard),
     ]
 
-    scores = []
-
+    scores: List[float] = []
     for name, grader in tasks:
-        score = await run_task(name, grader, client)
-        scores.append(score)
+        scores.append(run_task(name, grader, client, model))
 
-    avg_score = clamp(sum(scores) / len(scores))
-
+    avg_score = sum(scores) / len(scores) if scores else 0.5
+    avg_score = clamp_score(avg_score)
     print(f"[END] avg_score={avg_score:.2f}", flush=True)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

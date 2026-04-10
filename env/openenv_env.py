@@ -1,9 +1,30 @@
-try:
-    from openenv import Env
-except Exception:
-    # Keep FastAPI runtime bootable even when openenv doesn't expose Env.
-    class Env:  # type: ignore[no-redef]
-        pass
+import importlib
+
+
+def _resolve_env_base():
+    # Different OpenEnv releases expose the base class via different modules.
+    candidates = [
+        ("openenv", "Env"),
+        ("openenv.env", "Env"),
+        ("openenv_core", "Env"),
+        ("openenv_core.env", "Env"),
+        ("openenv", "Environment"),
+        ("openenv.env", "Environment"),
+    ]
+    for module_name, attr_name in candidates:
+        try:
+            module = importlib.import_module(module_name)
+            base = getattr(module, attr_name, None)
+            if isinstance(base, type):
+                return base
+        except Exception:
+            continue
+
+    # Keep FastAPI runtime bootable even when OpenEnv base is unavailable.
+    return object
+
+
+Env = _resolve_env_base()
 
 
 class HotelEnvOpen(Env):

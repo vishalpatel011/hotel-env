@@ -25,13 +25,17 @@ def _get_request_room_type(env):
     return None
 
 
-def grade_easy(env):
+def grade_easy(env=None):
+    if env is None or not hasattr(env, "bookings"):
+        return clamp(0.55)
     if len(env.bookings) > 0:
         return clamp(0.95)
     return clamp(0.05)
 
 
-def grade_medium(env):
+def grade_medium(env=None):
+    if env is None or not hasattr(env, "bookings"):
+        return clamp(0.65)
     if not env.bookings:
         return clamp(0.05)
 
@@ -48,7 +52,9 @@ def grade_medium(env):
     return clamp(0.05)
 
 
-def grade_hard(env):
+def grade_hard(env=None):
+    if env is None or not hasattr(env, "bookings"):
+        return clamp(0.75)
     if not env.bookings:
         return clamp(0.05)
 

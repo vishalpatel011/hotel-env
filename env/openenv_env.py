@@ -1,4 +1,9 @@
-from openenv import Env
+try:
+    from openenv import Env
+except Exception:
+    # Keep FastAPI runtime bootable even when openenv doesn't expose Env.
+    class Env:  # type: ignore[no-redef]
+        pass
 
 
 class HotelEnvOpen(Env):

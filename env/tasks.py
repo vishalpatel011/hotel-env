@@ -1,4 +1,4 @@
-from env.grader import grade_easy, grade_medium, grade_hard
+from .grader import grade_easy, grade_medium, grade_hard
 
 
 tasks = [

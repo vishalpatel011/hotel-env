@@ -43,11 +43,7 @@ def ensure_llm_call(client: OpenAI, model: str) -> None:
 
 def run_task(task_name: str, grader) -> float:
     env = HotelEnvOpen()
-    state = env.reset()
-    _ = state
-    _, reward, done, _ = env.step("book_room")
-    _ = reward
-    _ = done
+    env.reset()
     score = clamp_score(grader(env))
     print(f"[TASK] name={task_name} score={score:.2f}", flush=True)
     return score

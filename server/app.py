@@ -3,14 +3,19 @@ from pydantic import BaseModel
 
 from env.environment import HotelEnv
 from env.grader import grade_easy, grade_medium, grade_hard
-from env.tasks import TASKS, TASK_GRADERS
+from env.tasks import TASKS
 
 app = FastAPI()
 
 SCORE_FLOOR = 0.001
 SCORE_CEILING = 0.999
 TASK_ID_TO_NAME = {1: "easy", 2: "medium", 3: "hard"}
-VALID_TASKS = set(TASK_GRADERS)
+VALID_TASKS = {"easy", "medium", "hard"}
+TASK_GRADERS = {
+    "easy": grade_easy,
+    "medium": grade_medium,
+    "hard": grade_hard,
+}
 
 
 class ActionRequest(BaseModel):
@@ -45,7 +50,9 @@ def _normalize_task(value: str | int | None) -> str:
 
 def _resolve_task_name(payload: dict | GradeRequest | None) -> str:
     if isinstance(payload, GradeRequest):
-        return _normalize_task(payload.task) if payload.task is not None else _normalize_task(payload.task_id)
+        if payload.task is not None:
+            return _normalize_task(payload.task)
+        return _normalize_task(payload.task_id)
     if isinstance(payload, dict):
         for key in ("task", "task_id", "id", "name", "difficulty"):
             if key in payload:

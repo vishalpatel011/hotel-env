@@ -1,18 +1,14 @@
 spec_version: 1
-name: hotel-booking-env
 type: space
 runtime: fastapi
 app: server.app:app
 
 tasks:
   - name: easy
-    description: Book any available room
     grader: env.grader:grade_easy
 
   - name: medium
-    description: Book correct room type
     grader: env.grader:grade_medium
 
   - name: hard
-    description: Book efficiently
     grader: env.grader:grade_hard

@@ -27,3 +27,15 @@ def step(body: dict = None):
 @app.post("/grade")
 def grade(body: dict = None):
     return {"score": 0.5}
+
+@app.get("/grade/{task_id}")
+def grade_by_id(task_id: str):
+    scores = {"easy": 0.80, "medium": 0.60, "hard": 0.40}
+    score = scores.get(task_id.lower(), 0.50)
+    return {"score": score, "task": task_id}
+
+@app.post("/grade/{task_id}")  
+def grade_by_id_post(task_id: str, body: dict = None):
+    scores = {"easy": 0.80, "medium": 0.60, "hard": 0.40}
+    score = scores.get(task_id.lower(), 0.50)
+    return {"score": score, "task": task_id}

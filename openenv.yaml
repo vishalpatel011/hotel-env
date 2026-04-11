@@ -1,14 +1,27 @@
 spec_version: 1
+name: hotel-booking-env
 type: space
 runtime: fastapi
 app: server.app:app
 
 tasks:
-  - name: easy
-    grader: env.grader:grade_easy
+  - id: easy
+    difficulty: easy
+    description: "Basic hotel booking task"
+    grader:
+      type: llm
+      prompt_template: "Score the agent performance between 0.0 and 1.0"
 
-  - name: medium
-    grader: env.grader:grade_medium
+  - id: medium
+    difficulty: medium
+    description: "Intermediate hotel booking task"
+    grader:
+      type: llm
+      prompt_template: "Score the agent performance between 0.0 and 1.0"
 
-  - name: hard
-    grader: env.grader:grade_hard
+  - id: hard
+    difficulty: hard
+    description: "Complex hotel booking task"
+    grader:
+      type: llm
+      prompt_template: "Score the agent performance between 0.0 and 1.0"

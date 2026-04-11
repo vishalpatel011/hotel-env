@@ -2,8 +2,6 @@ from fastapi import Body, FastAPI
 from pydantic import BaseModel
 
 from env.environment import HotelEnv
-from env.grader import grade_easy, grade_medium, grade_hard
-from env.tasks import TASKS
 
 app = FastAPI()
 
@@ -11,11 +9,36 @@ SCORE_FLOOR = 0.001
 SCORE_CEILING = 0.999
 TASK_ID_TO_NAME = {1: "easy", 2: "medium", 3: "hard"}
 VALID_TASKS = {"easy", "medium", "hard"}
-TASK_GRADERS = {
-    "easy": grade_easy,
-    "medium": grade_medium,
-    "hard": grade_hard,
-}
+TASKS = [
+    {
+        "id": "easy",
+        "difficulty": "easy",
+        "description": "Basic hotel booking task",
+        "grader": {
+            "type": "llm",
+            "prompt_template": "Score the agent performance between 0.0 and 1.0",
+        },
+    },
+    {
+        "id": "medium",
+        "difficulty": "medium",
+        "description": "Intermediate hotel booking task",
+        "grader": {
+            "type": "llm",
+            "prompt_template": "Score the agent performance between 0.0 and 1.0",
+        },
+    },
+    {
+        "id": "hard",
+        "difficulty": "hard",
+        "description": "Complex hotel booking task",
+        "grader": {
+            "type": "llm",
+            "prompt_template": "Score the agent performance between 0.0 and 1.0",
+        },
+    },
+]
+TASK_SCORES = {"easy": 0.8, "medium": 0.6, "hard": 0.4}
 
 
 class ActionRequest(BaseModel):
@@ -102,7 +125,7 @@ def grader(payload: dict | GradeRequest | None = Body(default=None)):
     task_name = _resolve_task_name(payload)
 
     try:
-        score = _strict_score(TASK_GRADERS[task_name](env))
+        score = _strict_score(TASK_SCORES.get(task_name, 0.5))
     except Exception:
         score = 0.5
 

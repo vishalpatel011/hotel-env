@@ -8,6 +8,7 @@ tasks:
   - id: easy
     name: easy
     enabled: true
+    difficulty: easy
     description: "Basic task"
     grader:
       type: llm
@@ -16,6 +17,7 @@ tasks:
   - id: medium
     name: medium
     enabled: true
+    difficulty: medium
     description: "Intermediate task"
     grader:
       type: llm
@@ -24,6 +26,7 @@ tasks:
   - id: hard
     name: hard
     enabled: true
+    difficulty: hard
     description: "Advanced task"
     grader:
       type: llm

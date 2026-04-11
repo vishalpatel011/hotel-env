@@ -6,22 +6,13 @@ app: server.app:app
 
 tasks:
   - id: easy
-    difficulty: easy
-    description: "Basic hotel booking task"
-    grader:
-      type: llm
-      prompt_template: "Score the agent performance between 0.0 and 1.0"
+    description: Basic hotel booking task
+    grader: "env.grader:grade_easy"
 
   - id: medium
-    difficulty: medium
-    description: "Intermediate hotel booking task"
-    grader:
-      type: llm
-      prompt_template: "Score the agent performance between 0.0 and 1.0"
+    description: Intermediate hotel booking task
+    grader: "env.grader:grade_medium"
 
   - id: hard
-    difficulty: hard
-    description: "Complex hotel booking task"
-    grader:
-      type: llm
-      prompt_template: "Score the agent performance between 0.0 and 1.0"
+    description: Complex hotel booking task
+    grader: "env.grader:grade_hard"

@@ -6,6 +6,8 @@ app: server.app:app
 
 tasks:
   - id: easy
+    name: easy
+    enabled: true
     difficulty: easy
     description: "Basic hotel booking task"
     grader:
@@ -13,6 +15,8 @@ tasks:
       prompt_template: "Score the agent performance between 0.0 and 1.0"
 
   - id: medium
+    name: medium
+    enabled: true
     difficulty: medium
     description: "Intermediate hotel booking task"
     grader:
@@ -20,6 +24,8 @@ tasks:
       prompt_template: "Score the agent performance between 0.0 and 1.0"
 
   - id: hard
+    name: hard
+    enabled: true
     difficulty: hard
     description: "Complex hotel booking task"
     grader:
@@ -27,6 +33,8 @@ tasks:
       prompt_template: "Score the agent performance between 0.0 and 1.0"
 
   - id: expert
+    name: expert
+    enabled: true
     difficulty: hard
     description: "Expert-level hotel booking optimization task"
     grader:
@@ -34,6 +42,8 @@ tasks:
       prompt_template: "Score the agent performance between 0.0 and 1.0"
 
   - id: extreme
+    name: extreme
+    enabled: true
     difficulty: hard
     description: "Extreme multi-constraint hotel booking task"
     grader:

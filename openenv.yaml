@@ -6,13 +6,28 @@ app: server.app:app
 
 tasks:
   - id: easy
-    description: Basic hotel booking task
-    grader: "env.grader:grade_easy"
+    difficulty: easy
+    description: "Basic hotel booking task"
+    grader:
+      type: llm
+      output_key: score
+      prompt_template: |
+        You are a grader. Return a score strictly between 0.01 and 0.99.
 
   - id: medium
-    description: Intermediate hotel booking task
-    grader: "env.grader:grade_medium"
+    difficulty: medium
+    description: "Intermediate hotel booking task"
+    grader:
+      type: llm
+      output_key: score
+      prompt_template: |
+        You are a grader. Return a score strictly between 0.01 and 0.99.
 
   - id: hard
-    description: Complex hotel booking task
-    grader: "env.grader:grade_hard"
+    difficulty: hard
+    description: "Complex hotel booking task"
+    grader:
+      type: llm
+      output_key: score
+      prompt_template: |
+        You are a grader. Return a score strictly between 0.01 and 0.99.

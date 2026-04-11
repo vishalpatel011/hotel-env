@@ -1,8 +1,8 @@
-def grade_easy(*args, **kwargs):
-    return 0.8
+def grade_easy(trajectory=None) -> float:
+    return 0.80
 
-def grade_medium(*args, **kwargs):
-    return 0.6
+def grade_medium(trajectory=None) -> float:
+    return 0.60
 
-def grade_hard(*args, **kwargs):
-    return 0.4
+def grade_hard(trajectory=None) -> float:
+    return 0.40

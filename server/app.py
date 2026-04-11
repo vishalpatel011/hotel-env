@@ -2,6 +2,7 @@ from fastapi import Body, FastAPI
 from pydantic import BaseModel
 
 from env.environment import HotelEnv
+from env.grader import grade_easy, grade_hard, grade_medium
 
 app = FastAPI()
 
@@ -10,35 +11,11 @@ SCORE_CEILING = 0.999
 TASK_ID_TO_NAME = {1: "easy", 2: "medium", 3: "hard"}
 VALID_TASKS = {"easy", "medium", "hard"}
 TASKS = [
-    {
-        "id": "easy",
-        "difficulty": "easy",
-        "description": "Basic hotel booking task",
-        "grader": {
-            "type": "llm",
-            "prompt_template": "Score the agent performance between 0.0 and 1.0",
-        },
-    },
-    {
-        "id": "medium",
-        "difficulty": "medium",
-        "description": "Intermediate hotel booking task",
-        "grader": {
-            "type": "llm",
-            "prompt_template": "Score the agent performance between 0.0 and 1.0",
-        },
-    },
-    {
-        "id": "hard",
-        "difficulty": "hard",
-        "description": "Complex hotel booking task",
-        "grader": {
-            "type": "llm",
-            "prompt_template": "Score the agent performance between 0.0 and 1.0",
-        },
-    },
+    {"id": "easy", "grader": "env.grader:grade_easy"},
+    {"id": "medium", "grader": "env.grader:grade_medium"},
+    {"id": "hard", "grader": "env.grader:grade_hard"},
 ]
-TASK_SCORES = {"easy": 0.8, "medium": 0.6, "hard": 0.4}
+TASK_GRADERS = {"easy": grade_easy, "medium": grade_medium, "hard": grade_hard}
 
 
 class ActionRequest(BaseModel):
@@ -77,7 +54,7 @@ def _resolve_task_name(payload: dict | GradeRequest | None) -> str:
             return _normalize_task(payload.task)
         return _normalize_task(payload.task_id)
     if isinstance(payload, dict):
-        for key in ("task", "task_id", "id", "name", "difficulty"):
+        for key in ("task", "task_id", "id", "name"):
             if key in payload:
                 return _normalize_task(payload.get(key))
     return "easy"
@@ -125,7 +102,7 @@ def grader(payload: dict | GradeRequest | None = Body(default=None)):
     task_name = _resolve_task_name(payload)
 
     try:
-        score = _strict_score(TASK_SCORES.get(task_name, 0.5))
+        score = _strict_score(TASK_GRADERS.get(task_name, grade_easy)(None))
     except Exception:
         score = 0.5
 

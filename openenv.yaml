@@ -6,31 +6,10 @@ app: server.app:app
 
 tasks:
   - id: easy
-    name: easy
-    enabled: true
-    difficulty: easy
-    description: "Basic task"
-    grader:
-      type: llm
-      prompt_template: "Return a score between 0.01 and 0.99"
-      output_key: score
+    grader: env.grader:grade_easy
 
   - id: medium
-    name: medium
-    enabled: true
-    difficulty: medium
-    description: "Intermediate task"
-    grader:
-      type: llm
-      prompt_template: "Return a score between 0.01 and 0.99"
-      output_key: score
+    grader: env.grader:grade_medium
 
   - id: hard
-    name: hard
-    enabled: true
-    difficulty: hard
-    description: "Advanced task"
-    grader:
-      type: llm
-      prompt_template: "Return a score between 0.01 and 0.99"
-      output_key: score
+    grader: env.grader:grade_hard

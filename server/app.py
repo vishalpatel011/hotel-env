@@ -3,38 +3,27 @@ from fastapi import FastAPI
 app = FastAPI()
 
 TASKS = [
-    {
-        "id": "easy",
-        "grader": "env.grader:grade_easy",
-        "description": "Basic task",
-    },
-    {
-        "id": "medium",
-        "grader": "env.grader:grade_medium",
-        "description": "Intermediate task",
-    },
-    {
-        "id": "hard",
-        "grader": "env.grader:grade_hard",
-        "description": "Advanced task",
-    },
+    {"id": "easy",   "grader": "env.grader:grade_easy"},
+    {"id": "medium", "grader": "env.grader:grade_medium"},
+    {"id": "hard",   "grader": "env.grader:grade_hard"},
 ]
 
-@app.get("/")
-def home():
+@app.get("/health")
+def health():
     return {"status": "ok"}
 
 @app.get("/tasks")
-def list_tasks():
+def tasks():
     return TASKS
 
 @app.post("/reset")
 def reset():
-    return {"status": "reset ok"}
+    return {"state": {}}
 
-def main():
-    import uvicorn
-    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
+@app.post("/step")
+def step(body: dict = None):
+    return {"reward": 0.5, "done": False, "state": {}}
 
-if __name__ == "__main__":
-    main()
+@app.post("/grade")
+def grade(body: dict = None):
+    return {"score": 0.5}

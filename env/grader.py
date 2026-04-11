@@ -1,8 +1,8 @@
-def grade_easy(trajectory=None) -> float:
+def grade_easy(trajectory=None):
     return 0.80
 
-def grade_medium(trajectory=None) -> float:
+def grade_medium(trajectory=None):
     return 0.60
 
-def grade_hard(trajectory=None) -> float:
+def grade_hard(trajectory=None):
     return 0.40

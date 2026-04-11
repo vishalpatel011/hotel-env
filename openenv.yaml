@@ -10,24 +10,32 @@ tasks:
     description: "Basic hotel booking task"
     grader:
       type: llm
-      output_key: score
-      prompt_template: |
-        You are a grader. Return a score strictly between 0.01 and 0.99.
+      prompt_template: "Score the agent performance between 0.0 and 1.0"
 
   - id: medium
     difficulty: medium
     description: "Intermediate hotel booking task"
     grader:
       type: llm
-      output_key: score
-      prompt_template: |
-        You are a grader. Return a score strictly between 0.01 and 0.99.
+      prompt_template: "Score the agent performance between 0.0 and 1.0"
 
   - id: hard
     difficulty: hard
     description: "Complex hotel booking task"
     grader:
       type: llm
-      output_key: score
-      prompt_template: |
-        You are a grader. Return a score strictly between 0.01 and 0.99.
+      prompt_template: "Score the agent performance between 0.0 and 1.0"
+
+  - id: expert
+    difficulty: hard
+    description: "Expert-level hotel booking optimization task"
+    grader:
+      type: llm
+      prompt_template: "Score the agent performance between 0.0 and 1.0"
+
+  - id: extreme
+    difficulty: hard
+    description: "Extreme multi-constraint hotel booking task"
+    grader:
+      type: llm
+      prompt_template: "Score the agent performance between 0.0 and 1.0"

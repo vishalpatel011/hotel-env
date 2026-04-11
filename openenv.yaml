@@ -13,6 +13,7 @@ tasks:
     grader:
       type: llm
       prompt_template: "Return a score between 0.01 and 0.99"
+      output_key: score
 
   - id: medium
     name: medium
@@ -22,6 +23,7 @@ tasks:
     grader:
       type: llm
       prompt_template: "Return a score between 0.01 and 0.99"
+      output_key: score
 
   - id: hard
     name: hard
@@ -31,3 +33,4 @@ tasks:
     grader:
       type: llm
       prompt_template: "Return a score between 0.01 and 0.99"
+      output_key: score
